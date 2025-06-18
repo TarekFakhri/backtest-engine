@@ -5,7 +5,6 @@ A simple moving average crossover strategy.
 
 Buys when the short-term moving average crosses above the long-term moving average,
 and sells when it crosses below.
-
 @Author: Tarek Fakhri
 @Created: 2025-06-17
 """
