@@ -51,8 +51,7 @@ class MovingAverageCrossoverStrategy(BaseStrategy):
         signal[short_ma > long_ma] = 1
         signal[short_ma < long_ma] = -1
 
-        # Optional: Avoid redundant signals (i.e., hold if signal hasn't changed)
+        # Avoid redundant signals (i.e., hold if signal hasn't changed)
         signal = signal.where(signal != signal.shift(), 0)
 
         return signal
-

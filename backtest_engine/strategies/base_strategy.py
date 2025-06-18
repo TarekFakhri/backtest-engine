@@ -56,4 +56,3 @@ class BaseStrategy(ABC):
         missing = required_columns - set(self.prices.columns)
         if missing:
             raise ValueError(f"Missing required columns in price data: {missing}")
-
