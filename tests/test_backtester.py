@@ -4,7 +4,7 @@
 Unit tests for the Backtester core engine.
 
 @Author: Tarek Fakhri
-@Date: 2025-06-18
+@Date: 2025-06-19
 """
 
 import pandas as pd
@@ -43,10 +43,10 @@ def test_backtester_executes_trades_correctly():
     # Validate expected trade outcomes
     trade_log = backtester.trade_log
     assert len(trade_log) == 2
-    assert trade_log[0]["type"] == "BUY"
-    assert trade_log[0]["price"] == 105
-    assert trade_log[1]["type"] == "SELL"
-    assert trade_log[1]["price"] == 120
+    assert trade_log[0].type == "BUY"
+    assert trade_log[0].price == 105
+    assert trade_log[1].type == "SELL"
+    assert trade_log[1].price == 120
 
     # Check portfolio value at final step (should be fully in cash after sell)
     final_value = result["portfolio_value"].iloc[-1]
