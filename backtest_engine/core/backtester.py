@@ -7,10 +7,11 @@ Simulates the execution of a trading strategy over historical data.
 @Date: 2025-06-19
 """
 
-from typing import List, Dict
+from typing import List
 import pandas as pd
-from backtest_engine.core.trade import Trade
 from backtest_engine.strategies.base_strategy import BaseStrategy
+from backtest_engine.core.trade import Trade
+from backtest_engine.core.portfolio import Portfolio
 
 
 class Backtester:
@@ -28,10 +29,8 @@ class Backtester:
         """
         self.strategy = strategy
         self.prices = strategy.prices
-        self.cash = initial_cash
-        self.position = 0.0  # number of shares
-        self.entry_price = None
-        self.trade_log: List[Dict] = []
+        self.portfolio = Portfolio(initial_cash)
+        self.trade_log: List[Trade] = []
         self.portfolio_value = []
 
     def run(self) -> pd.DataFrame:
@@ -42,37 +41,33 @@ class Backtester:
         - pd.DataFrame: Portfolio value and trades indexed by date
         """
         signals = self.strategy.generate_signals()
+
         for date, signal in signals.items():
             close_price = self.prices.loc[date, "Close"]
 
-            # Buy signal
-            if signal == 1 and self.position == 0:
-                self.position = self.cash / close_price
-                self.cash = 0.0
-                self.entry_price = close_price
-                self.trade_log.append(Trade(
-                    date=date,
-                    type="BUY",
-                    price=close_price,
-                    shares=self.position
-                ))
+            if signal == 1:
+                if self.portfolio.position == 0:
+                    self.portfolio.buy(close_price)
+                    self.trade_log.append(Trade(
+                        date=date,
+                        type="BUY",
+                        price=close_price,
+                        shares=self.portfolio.position
+                    ))
 
-            # Sell signal
-            elif signal == -1 and self.position > 0:
-                self.cash = self.position * close_price
-                self.trade_log.append(Trade(
-                    date=date,
-                    type="SELL",
-                    price=close_price,
-                    shares=self.position,
-                    pnl=(close_price - self.entry_price) * self.position
-                ))
-                self.position = 0.0
-                self.entry_price = None
+            elif signal == -1:
+                if self.portfolio.position > 0:
+                    pnl = self.portfolio.sell(close_price)
+                    self.trade_log.append(Trade(
+                        date=date,
+                        type="SELL",
+                        price=close_price,
+                        shares=0.0,  # After sell, no position held
+                        pnl=pnl
+                    ))
 
-            # Track portfolio value
-            value = self.cash + self.position * close_price
-            self.portfolio_value.append((date, value))
+            # Track value every day
+            self.portfolio_value.append((date, self.portfolio.value(close_price)))
 
         return self._build_result_df()
 
