@@ -4,11 +4,12 @@
 Simulates the execution of a trading strategy over historical data.
 
 @Author: Tarek Fakhri
-@Date: 2025-06-18
+@Date: 2025-06-19
 """
 
 from typing import List, Dict
 import pandas as pd
+from backtest_engine.core.trade import Trade
 from backtest_engine.strategies.base_strategy import BaseStrategy
 
 
@@ -49,23 +50,23 @@ class Backtester:
                 self.position = self.cash / close_price
                 self.cash = 0.0
                 self.entry_price = close_price
-                self.trade_log.append({
-                    "date": date,
-                    "type": "BUY",
-                    "price": close_price,
-                    "shares": self.position,
-                })
+                self.trade_log.append(Trade(
+                    date=date,
+                    type="BUY",
+                    price=close_price,
+                    shares=self.position
+                ))
 
             # Sell signal
             elif signal == -1 and self.position > 0:
                 self.cash = self.position * close_price
-                self.trade_log.append({
-                    "date": date,
-                    "type": "SELL",
-                    "price": close_price,
-                    "shares": self.position,
-                    "pnl": (close_price - self.entry_price) * self.position
-                })
+                self.trade_log.append(Trade(
+                    date=date,
+                    type="SELL",
+                    price=close_price,
+                    shares=self.position,
+                    pnl=(close_price - self.entry_price) * self.position
+                ))
                 self.position = 0.0
                 self.entry_price = None
 
