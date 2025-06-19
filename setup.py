@@ -7,6 +7,8 @@ setup(
     install_requires=[
         "pandas",
         "matplotlib",
-        "pytest"
+        "pytest",
+        "yfinance"
     ],
+    python_requires=">=3.8",
 )

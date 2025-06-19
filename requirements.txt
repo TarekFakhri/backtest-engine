@@ -1,3 +1,4 @@
 pandas
-pytest
 matplotlib>=3.7
+pytest
+yfinance
