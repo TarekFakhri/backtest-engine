@@ -45,6 +45,11 @@ class MovingAverageCrossoverStrategy(BaseStrategy):
         short_ma = self.prices['Close'].rolling(window=self.short_window, min_periods=1).mean()
         long_ma = self.prices['Close'].rolling(window=self.long_window, min_periods=1).mean()
 
+        self.indicators = {
+            "short_ma": short_ma,
+            "long_ma": long_ma
+        }
+
         signal = pd.Series(0, index=self.prices.index)
 
         signal[short_ma > long_ma] = 1

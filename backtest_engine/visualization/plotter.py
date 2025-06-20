@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_price_with_signals(prices: pd.DataFrame, signals: pd.Series) -> None:
+def plot_price_with_signals(prices: pd.DataFrame, signals: pd.Series, indicators: dict = None) -> None:
     """
     Plot stock prices with buy/sell signals.
 
@@ -27,6 +27,9 @@ def plot_price_with_signals(prices: pd.DataFrame, signals: pd.Series) -> None:
 
     plt.scatter(buy_signals.index, buy_signals, label="Buy", marker="^", color="green", s=80)
     plt.scatter(sell_signals.index, sell_signals, label="Sell", marker="v", color="red", s=80)
+    if indicators:
+            for label, series in indicators.items():
+                plt.plot(series.index, series, label=label, linestyle='--')
 
     plt.title("Price with Buy/Sell Signals")
     plt.xlabel("Date")
